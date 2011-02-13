@@ -136,8 +136,7 @@ DateTime using the given format string."
   :saturday"
   {:arglists '([date] [date locale] [date day] [date day locale])}
   ([date]
-     (-> date as-date-time (.toCalendar (locale))
-         (.get Calendar/DAY_OF_WEEK) int->weekday))
+     (day-of-week date (locale)))
   ([date day]
      (if (locale? day) (-> date as-date-time (.toCalendar day)
                            (.get Calendar/DAY_OF_WEEK) int->weekday)
@@ -145,9 +144,9 @@ DateTime using the given format string."
   ([date day locale]
      (let [calendar (-> date as-date-time (.toCalendar locale) .clone)]
        (.set calendar Calendar/DAY_OF_WEEK (weekday->int day))
-       (int->weekday (as-date-time calendar)))))
+       (as-date-time calendar))))
 
-(defn start-of-week
+(defn first-day-of-week
   "Answer the weekday that is the start of the week for the given
 Datable."
   ([date]
@@ -155,3 +154,11 @@ Datable."
   ([date locale]
      (-> date as-date-time (.toCalendar locale)
          .getFirstDayOfWeek int->weekday)))
+
+(defn start-of-week
+  "Answer the day that is the start of the 'current' week of the given
+Datable."
+  ([date]
+     (start-of-week date (locale)))
+  ([date locale]
+     (day-of-week date (first-day-of-week date locale) locale)))
