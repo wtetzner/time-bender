@@ -6,8 +6,8 @@
 ;;   the terms of this license.
 ;;   You must not remove this notice, or any other, from this software.
 
-(defproject org.bovinegenius/date-time "1.0.0-SNAPSHOT"
-  :description "Date-Time library that defines a DateTime protocol and
+(defproject org.bovinegenius/time-bender "1.0.0-SNAPSHOT"
+  :description "A DateTime library that defines a Datable protocol and
   implements it on various Java types."
   :dependencies [[org.clojure/clojure "1.2.0"]
                  [org.clojure/clojure-contrib "1.2.0"]

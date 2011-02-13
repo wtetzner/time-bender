@@ -6,7 +6,7 @@
 ;;   the terms of this license.
 ;;   You must not remove this notice, or any other, from this software.
 
-(ns org.bovinegenius.date-time
+(ns org.bovinegenius.time-bender
   (:use (clojure.contrib def))
   (:import (org.joda.time DateTime Period PeriodType Instant)
            (org.joda.time.format DateTimeFormat)
