@@ -8,7 +8,8 @@
 
 (ns org.bovinegenius.time-bender
   (:use (clojure.contrib def))
-  (:import (org.joda.time DateTime Period PeriodType Instant)
+  (:import (org.joda.time DateTime Period PeriodType Instant
+                          DateTimeZone)
            (org.joda.time.format DateTimeFormat)
            (java.util Calendar Locale Date)))
 
@@ -54,11 +55,11 @@ string using the given format string."
 (extend Date
   Datable
   {:as-date-time (fn [self]
-                   (-> self .getTime DateTime.))
+                   (DateTime. self))
    :from-date-time (fn [self date-time]
-                     (let [new-date (.clone self)]
-                       (.setTime new-date (.getMillis date-time))
-                       new-date))})
+                     (let [date (.clone self)]
+                       (.setTime date (.getMillis date-time))
+                       date))})
 
 (extend DateTime
   Datable
@@ -76,9 +77,13 @@ string using the given format string."
 (extend Calendar
   Datable
   {:as-date-time (fn [self]
-                   (as-date-time (.getTime self)))
+                   (DateTime. self))
    :from-date-time (fn [self date-time]
-                     (-> self .clone (.setTimeInMillis (.getMillis date-time))))})
+                     (let [new-cal (.clone self)]
+                       (.setTimeInMillis new-cal (.getMillis date-time))
+                       (.setTimeZone new-cal (-> date-time .getZone
+                                                 .toTimeZone))
+                       new-cal))})
 
 (defn- locale?
   "Answers whether or not the given object is a java.util.Locale."
@@ -379,3 +384,39 @@ Datable."
   ([date second]
      (from-date-time date (-> date as-date-time
                               (.withSecondOfMinute second)))))
+
+(defn year
+  "Get or set the year of the given Datable."
+  ([date]
+     (-> date as-date-time .year .get))
+  ([date year]
+     (from-date-time date (-> date as-date-time (.withYear year)))))
+
+(defn year-of-century
+  "Get or set the year of century of the given Datable."
+  ([date]
+     (-> date as-date-time .yearOfCentury .get))
+  ([date year]
+     (from-date-time date (-> date as-date-time (.withYearOfCentury year)))))
+
+(defn year-of-era
+  "Get or set the year of era for the given Datable."
+  ([date]
+     (-> date as-date-time .yearOfEra .get))
+  ([date year]
+     (from-date-time date (-> date as-date-time (.withYearOfEra year)))))
+
+(defn from-time-zone
+  "Get a date with the current field values, but in the given timezone."
+  [date timezone]
+  (from-date-time date (-> date as-date-time (.withZoneRetainFields timezone))))
+
+(defn time-zone-for-id
+  "Return a time zone for the given ID."
+  [id]
+  (DateTimeZone/forID id))
+
+(defn time-zone-for-offset
+  "Return a time zone for the given hour offset."
+  [offset]
+  (DateTimeZone/forOffsetHours offset))
