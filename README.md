@@ -1,4 +1,5 @@
-# Time Bender
+Time Bender
+-----------
 
 Library for manipulating dates and times. The functions provided work on several different types:
 *java.util.Date
@@ -8,7 +9,8 @@ Library for manipulating dates and times. The functions provided work on several
 *java.sql.Date
 *java.sql.Timestamp
 
-## Usage
+Usage
+-----
 
 The functions provieded allow for manipulating many types of dates.
 
@@ -22,7 +24,8 @@ the same for a java.util.Date:
 (day-of-month (java.util.Date. 2011 3 14) 15)
 => #<Date Sat Apr 15 00:00:00 EDT 3911>
 
-## License
+License
+-------
 
 Copyright (C) 2011 Walter Tetzner. All rights reserved.
 The use and distribution terms for this software are covered by the
