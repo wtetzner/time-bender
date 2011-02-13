@@ -203,11 +203,10 @@ a start date and a number of days."
   {:arglists '([start end] [start num-days])}
   [start end]
   (if (number? end)
-    (let [millis (int (* end 86400000))]
-      (day-range start (.plusMillis start millis)))
     (map (fn [num]
            (.plusDays start num))
-         (-> (Period. start end (PeriodType/days)) .getDays range))))
+         (range end))
+    (days-between start (-> (Period. start end (PeriodType/days)) .getDays))))
 
 (defn days-in-week
   "Get a sequence of days in the 'current' week of the given Datable."
@@ -230,10 +229,82 @@ given Datable."
   [date]
   (day-of-month date 1))
 
+(defn number-of-days-in-month
+  "Answer the number of days in the 'current' month of the given
+Datable."
+  [date]
+  (-> date as-date-time .dayOfMonth .getMaximumValue))
+
 (defn end-of-month
   "Answer the day that is the end of the 'current' month of the
 given Datable."
   [date]
-  (day-of-month date (-> date as-date-time .dayOfMonth .getMaximumValue)))
+  (day-of-month date (number-of-days-in-month date)))
 
+(defn first-day-of-month
+  "Answer the weekday that is the start of the month for the given
+Datable."
+  ([date]
+     (first-day-of-month date (locale)))
+  ([date locale]
+     (day-of-week (start-of-month date) locale)))
 
+(defn last-day-of-month
+  "Answer the weekday that is the end of the month for the given
+Datable."
+  ([date]
+     (last-day-of-month date (locale)))
+  ([date locale]
+     (day-of-week (end-of-month date) locale)))
+
+(defn days-in-month
+  "Get a sequence of days in the 'current' month of the given Datable."
+  [date]
+  (days-between (start-of-month date) (number-of-days-in-month date)))
+
+(defn day-of-year
+  "Get or set the day of year of the given Datable."
+  ([date]
+     (-> date as-date-time .dayOfYear .get))
+  ([date day]
+     (from-date-time date (-> date as-date-time
+                              (.withDayOfYear day)))))
+
+(defn start-of-year
+  "Answer the day that is the start of the 'current' year of the
+given Datable."
+  [date]
+  (day-of-year date 1))
+
+(defn number-of-days-in-year
+  "Answer the number of days in the 'current' year of the given
+Datable."
+  [date]
+  (-> date as-date-time .dayOfYear .getMaximumValue))
+
+(defn end-of-year
+  "Answer the day that is the end of the 'current' year of the
+given Datable."
+  [date]
+  (day-of-year date (number-of-days-in-year date)))
+
+(defn first-day-of-year
+  "Answer the weekday that is the start of the year for the given
+Datable."
+  ([date]
+     (first-day-of-year date (locale)))
+  ([date locale]
+     (day-of-week (start-of-year date) locale)))
+
+(defn last-day-of-year
+  "Answer the weekday that is the start of the year for the given
+Datable."
+  ([date]
+     (last-day-of-year date (locale)))
+  ([date locale]
+     (day-of-week (end-of-year date) locale)))
+
+(defn days-in-year
+  "Get a sequence of days in the 'current' year of the given Datable."
+  [date]
+  (days-between (start-of-year date) (number-of-days-in-year date)))
