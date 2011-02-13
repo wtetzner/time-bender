@@ -46,7 +46,7 @@ string using the given format string."
     (fn [date]
       (.print formatter (as-date-time date)))))
 
-(defn format
+(defn format-date
   "Format the given Datable to the specified format string."
   [date format]
   ((formatter format) date))
@@ -356,3 +356,26 @@ Datable."
      (from-date-time date (-> date as-date-time (.withHourOfDay hour)))))
 
 
+(defn millis-of-second
+  "Get or set the millis of second of the given Datable."
+  ([date]
+     (-> date as-date-time .millisOfSecond .get))
+  ([date millis]
+     (from-date-time date (-> date as-date-time
+                              (.withMillisOfSecond millis)))))
+
+(defn minute-of-hour
+  "Get or set the minute of hour of the given Datable."
+  ([date]
+     (-> date as-date-time .minuteOfHour .get))
+  ([date minute]
+     (from-date-time date (-> date as-date-time
+                              (.withMinuteOfHour minute)))))
+
+(defn second-of-minute
+  "Get or set the second of minute of the given Datable."
+  ([date]
+     (-> date as-date-time .secondOfMinute .get))
+  ([date second]
+     (from-date-time date (-> date as-date-time
+                              (.withSecondOfMinute second)))))
