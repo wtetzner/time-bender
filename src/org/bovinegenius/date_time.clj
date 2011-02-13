@@ -1,6 +1,6 @@
 (ns org.bovinegenius.date-time
   (:use (clojure.contrib def))
-  (:import (org.joda.time DateTime Period PeriodType)
+  (:import (org.joda.time DateTime Period PeriodType Instant)
            (org.joda.time.format DateTimeFormat)
            (java.util Calendar Locale Date)))
 
@@ -35,13 +35,22 @@ DateTime using the given format string."
   {:as-date-time (fn [self]
                    (-> self .getTime DateTime.))
    :from-date-time (fn [self date-time]
-                     (-> date-time .getMillis Date.))})
+                     (let [new-date (.clone self)]
+                       (.setTime new-date (.getMillis date-time))
+                       new-date))})
 
 (extend DateTime
   Datable
   {:as-date-time identity
    :from-date-time (fn [self date-time]
                      date-time)})
+
+(extend Instant
+  Datable
+  {:as-date-time (fn [self]
+                   (.toDateTimeISO self))
+   :from-date-time (fn [self date-time]
+                     (Instant. (.getMillis date-time)))})
 
 (extend Calendar
   Datable
