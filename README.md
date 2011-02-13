@@ -17,12 +17,12 @@ The functions provieded allow for manipulating many types of dates.
 Examples:
 
 To set the day of month of a Joda Time DateTime:
-(day-of-month (org.joda.time.DateTime. 2011 3 14 12 0 0 0) 15)
-=> #<DateTime 2011-03-15T12:00:00.000-04:00>
+ (day-of-month (org.joda.time.DateTime. 2011 3 14 12 0 0 0) 15)
+ => #<DateTime 2011-03-15T12:00:00.000-04:00>
 
 the same for a java.util.Date:
-(day-of-month (java.util.Date. 2011 3 14) 15)
-=> #<Date Sat Apr 15 00:00:00 EDT 3911>
+ (day-of-month (java.util.Date. 2011 3 14) 15)
+ => #<Date Sat Apr 15 00:00:00 EDT 3911>
 
 License
 -------
