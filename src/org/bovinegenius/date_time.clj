@@ -158,7 +158,7 @@ DateTime using the given format string."
   ([date day locale]
      (let [calendar (-> date as-date-time (.toCalendar locale) .clone)]
        (.set calendar Calendar/DAY_OF_WEEK (weekday->int day))
-       (as-date-time calendar))))
+       (from-date-time date (as-date-time calendar)))))
 
 (defn first-day-of-week
   "Answer the weekday that is the start of the week for the given
@@ -204,9 +204,11 @@ a start date and a number of days."
   [start end]
   (if (number? end)
     (map (fn [num]
-           (.plusDays start num))
+           (from-date-time start (.plusDays (as-date-time start) num)))
          (range end))
-    (days-between start (-> (Period. start end (PeriodType/days)) .getDays))))
+    (days-between start (-> (Period. (as-date-time start) (as-date-time end)
+                                     (PeriodType/days))
+                            .getDays))))
 
 (defn days-in-week
   "Get a sequence of days in the 'current' week of the given Datable."
