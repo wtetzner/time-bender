@@ -1,6 +1,16 @@
 (ns org.bovinegenius.date-time
+  (:use (clojure.contrib def))
   (:import (org.joda.time DateTime)
-           (org.joda.time.format DateTimeFormat)))
+           (org.joda.time.format DateTimeFormat)
+           (java.util Calendar Locale Date)))
+
+(defvar *locale* nil
+  "The locale to use.")
+
+(defn locale
+  "Get the current locale."
+  []
+  (or *locale* (Locale/getDefault)))
 
 (defprotocol Datable
   "A protocol to convert to and from Joda Time DateTime objects."
