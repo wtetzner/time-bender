@@ -194,7 +194,7 @@ string using the given format string."
   "Answer the weekday that is the start of the week for the given
 Datable."
   ([date]
-     (start-of-week date (locale)))
+     (first-day-of-week date (locale)))
   ([date locale]
      (-> date as-date-time (.toCalendar locale)
          .getFirstDayOfWeek int->weekday)))
