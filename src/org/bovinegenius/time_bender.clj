@@ -340,3 +340,19 @@ Datable."
   "Get a sequence of days in the 'current' year of the given Datable."
   [date]
   (days-between (start-of-year date) (number-of-days-in-year date)))
+
+(defn era
+  "Get or set the era of the given Datable."
+  ([date]
+     (-> date as-date-time .era .get))
+  ([date era]
+     (from-date-time date (-> date as-date-time (.withEra era)))))
+
+(defn hour-of-day
+  "Get or set the hour of day for the given Datable."
+  ([date]
+     (-> date as-date-time .hourOfDay .get))
+  ([date hour]
+     (from-date-time date (-> date as-date-time (.withHourOfDay hour)))))
+
+
