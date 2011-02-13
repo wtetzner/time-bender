@@ -38,6 +38,19 @@ DateTime using the given format string."
   [string format]
   ((parser format) string))
 
+(defn formatter
+  "Returns a function that takes a Datable and formats it into a
+string using the given format string."
+  [format]
+  (let [formatter (DateTimeFormat/forPattern format)]
+    (fn [date]
+      (.print formatter (as-date-time date)))))
+
+(defn format
+  "Format the given Datable to the specified format string."
+  [date format]
+  ((formatter format) date))
+
 (extend Date
   Datable
   {:as-date-time (fn [self]
