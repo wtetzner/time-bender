@@ -30,12 +30,12 @@ DateTime using the given format string."
   [string format]
   ((parser format) string))
 
-(extend java.util.Date
+(extend Date
   Datable
   {:as-date-time (fn [self]
                    (-> self .getTime DateTime.))
    :from-date-time (fn [self date-time]
-                     (-> date-time .getMillis java.util.Date.))})
+                     (-> date-time .getMillis Date.))})
 
 (extend DateTime
   Datable
