@@ -1,6 +1,6 @@
 (ns org.bovinegenius.date-time
   (:use (clojure.contrib def))
-  (:import (org.joda.time DateTime)
+  (:import (org.joda.time DateTime Period PeriodType)
            (org.joda.time.format DateTimeFormat)
            (java.util Calendar Locale Date)))
 
@@ -110,6 +110,20 @@ DateTime using the given format string."
    :saturday Calendar/SATURDAY}
   "Map of weekday names to integers.")
 
+(defvar- weekday-order
+  [:sunday
+   :monday
+   :tuesday
+   :wednesday
+   :thursday
+   :friday
+   :saturday]
+  "Weekday names in order.")
+
+(defvar- weekday-reverse-order
+  (vec (reverse weekday-order))
+  "Weekday names in reverse order.")
+
 (defvar int->weekday
   (into {} (map (fn [[weekday integer]]
                   [integer weekday])
@@ -155,6 +169,18 @@ Datable."
      (-> date as-date-time (.toCalendar locale)
          .getFirstDayOfWeek int->weekday)))
 
+(defn last-day-of-week
+  "Answer the weekday that is the end of the week for the given
+Datable."
+  ([date]
+     (last-day-of-week date (locale)))
+  ([date locale]
+     (let [first-day (first-day-of-week date locale)]
+       (->> (cycle weekday-reverse-order)
+            (drop-while (partial not= first-day))
+            rest
+            first))))
+
 (defn start-of-week
   "Answer the day that is the start of the 'current' week of the given
 Datable."
@@ -162,3 +188,52 @@ Datable."
      (start-of-week date (locale)))
   ([date locale]
      (day-of-week date (first-day-of-week date locale) locale)))
+
+(defn end-of-week
+  "Answer the day that is the start of the 'current' week of the given
+Datable."
+  ([date]
+     (end-of-week date (locale)))
+  ([date locale]
+     (day-of-week date (last-day-of-week date locale) locale)))
+
+(defn days-between
+  "Return a range of days, either taking a start date and end date, or
+a start date and a number of days."
+  {:arglists '([start end] [start num-days])}
+  [start end]
+  (if (number? end)
+    (let [millis (int (* end 86400000))]
+      (day-range start (.plusMillis start millis)))
+    (map (fn [num]
+           (.plusDays start num))
+         (-> (Period. start end (PeriodType/days)) .getDays range))))
+
+(defn days-in-week
+  "Get a sequence of days in the 'current' week of the given Datable."
+  ([date]
+     (days-in-week date (locale)))
+  ([date locale]
+     (days-between (start-of-week date locale) 7)))
+
+(defn day-of-month
+  "Get or set the day of month of the given Datable."
+  ([date]
+     (-> date as-date-time .dayOfMonth .get))
+  ([date day]
+     (from-date-time date (-> date as-date-time
+                              (.withDayOfMonth day)))))
+
+(defn start-of-month
+  "Answer the day that is the start of the 'current' month of the
+given Datable."
+  [date]
+  (day-of-month date 1))
+
+(defn end-of-month
+  "Answer the day that is the end of the 'current' month of the
+given Datable."
+  [date]
+  (day-of-month date (-> date as-date-time .dayOfMonth .getMaximumValue)))
+
+
