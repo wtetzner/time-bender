@@ -9,7 +9,8 @@
 (ns org.bovinegenius.time-bender
   (:use (clojure.contrib def))
   (:import (org.joda.time DateTime Period PeriodType Instant
-                          DateTimeZone)
+                          DateTimeZone Interval DurationFieldType
+                          Days Weeks Duration)
            (org.joda.time.format DateTimeFormat)
            (java.util Calendar Locale Date)))
 
@@ -406,11 +407,6 @@ Datable."
   ([date year]
      (from-date-time date (-> date as-date-time (.withYearOfEra year)))))
 
-(defn from-time-zone
-  "Get a date with the current field values, but in the given timezone."
-  [date timezone]
-  (from-date-time date (-> date as-date-time (.withZoneRetainFields timezone))))
-
 (defn time-zone-for-id
   "Return a time zone for the given ID."
   [id]
@@ -420,3 +416,88 @@ Datable."
   "Return a time zone for the given hour offset."
   [offset]
   (DateTimeZone/forOffsetHours offset))
+
+(defn to-time-zone
+  "Convert date to the given time zone."
+  [date time-zone]
+  (from-date-time date (-> date as-date-time (.withZone time-zone))))
+
+(defn time-zone
+  "Get or set the time zone, keeping the current field values."
+  ([date]
+     (-> date as-date-time .getZone))
+  ([date time-zone]
+     (from-date-time date (-> date as-date-time
+                              (.withZoneRetainFields time-zone)))))
+
+(defn duration
+  "Get the duration between the start and end dates."
+  [start end]
+  (.toDuration (Interval. (as-date-time start) (as-date-time end))))
+
+(defn interval
+  "Get the interval between the start and end dates."
+  [start end]
+  (Interval. (as-date-time start) (as-date-time end)))
+
+(defn in-millis
+  "Get the given duration or interval in milliseconds."
+  ([duration]
+     (-> duration (.toPeriod (PeriodType/millis))
+         .getMillis))
+  ([start end]
+     (in-millis (interval start end))))
+
+(defn in-seconds
+  "Get the given duration or interval in seconds."
+  ([duration]
+     (-> duration (.toPeriod (PeriodType/seconds))
+         .getSeconds))
+  ([start end]
+     (in-seconds (interval start end))))
+
+(defn in-minutes
+  "Get the given duration or interval in minutes."
+  ([duration]
+     (-> duration (.toPeriod (PeriodType/minutes))
+         .getMinutes))
+  ([start end]
+     (in-minutes (interval start end))))
+
+(defn in-hours
+  "Get the given duration or interval in hours."
+  ([duration]
+     (-> duration (.toPeriod (PeriodType/hours))
+         .getHours))
+  ([start end]
+     (in-hours (interval start end))))
+
+(defn in-days
+  "Get the given duration or interval in days."
+  ([duration]
+     (if (instance? Duration duration)
+       (int (/ (in-hours duration) 24))
+       (-> duration (.toPeriod (PeriodType/days))
+           .getDays)))
+  ([start end]
+     (in-days (interval start end))))
+
+(defn in-weeks
+  "Get the given duration or interval in weeks."
+  ([duration]
+     (if (instance? Duration duration)
+       (int (/ (in-hours duration) (* 7 24)))
+       (-> duration (.toPeriod (PeriodType/weeks))
+           .getWeeks)))
+  ([start end]
+     (in-weeks (interval start end))))
+
+(defn in-months
+  "Get the given duration or interval in months."
+  ([duration]
+     (if (instance? Duration duration)
+       (int (/ (in-days duration) 30))
+       (-> duration (.toPeriod (PeriodType/months))
+           .getMonths)))
+  ([start end]
+     (in-months (interval start end))))
