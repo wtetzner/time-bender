@@ -361,7 +361,6 @@ Datable."
   ([date hour]
      (from-date-time date (-> date as-date-time (.withHourOfDay hour)))))
 
-
 (defn millis-of-second
   "Get or set the millis of second of the given Datable."
   ([date]
@@ -392,6 +391,14 @@ Datable."
      (-> date as-date-time .year .get))
   ([date year]
      (from-date-time date (-> date as-date-time (.withYear year)))))
+
+(defn week-of-weekyear
+  "Get or set the week of weekyear of the given Datable."
+  ([date]
+     (-> date as-date-time .weekOfWeekyear .get))
+  ([date week]
+     (from-date-time date (-> date as-date-time
+                              (.withWeekOfWeekyear week)))))
 
 (defn year-of-century
   "Get or set the year of century of the given Datable."
