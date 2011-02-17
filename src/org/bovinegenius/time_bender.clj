@@ -508,3 +508,15 @@ Datable."
            .getMonths)))
   ([start end]
      (in-months (interval start end))))
+
+(defn in-years
+  "Get the given duration or interval in years."
+  ([duration]
+     (if (instance? Duration duration)
+       (int (/ (in-months duration) 12))
+       (-> duration (.toPeriod (PeriodType/years))
+           .getYears)))
+  ([start end]
+     (in-years (interval start end))))
+
+
